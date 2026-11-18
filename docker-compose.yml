@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  vps-tester:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vps-tester-app
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - PORT=8000
+      - APP_ENV=production
+      - DATA_DIR=/app/data
+      - STORAGE_DIR=/app/storage
+      - DATABASE_PATH=/app/data/app.db
+    volumes:
+      # Volumen persistente para la Base de Datos
+      - ./data:/app/data
+      # Volumen persistente para Archivos y pruebas de almacenamiento
+      - ./storage:/app/storage
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
