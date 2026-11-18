@@ -28,7 +28,23 @@ from app.database import (
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STORAGE_DIR = os.getenv("STORAGE_DIR", os.path.join(os.path.dirname(BASE_DIR), "storage"))
 DATA_DIR = os.getenv("DATA_DIR", os.path.join(os.path.dirname(BASE_DIR), "data"))
-APP_PORT = int(os.getenv("PORT", 8000))
+
+def resolve_port():
+    if os.getenv("PORT"):
+        try:
+            return int(os.getenv("PORT"))
+        except ValueError:
+            pass
+    port_file = os.path.join(os.path.dirname(BASE_DIR), "PORT")
+    if os.path.exists(port_file):
+        try:
+            with open(port_file) as f:
+                return int(f.read().strip())
+        except Exception:
+            pass
+    return 30002
+
+APP_PORT = resolve_port()
 APP_ENV = os.getenv("APP_ENV", "testing")
 
 os.makedirs(STORAGE_DIR, exist_ok=True)
